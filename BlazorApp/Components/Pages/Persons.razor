@@ -1,6 +1,59 @@
 ﻿@page "/Persons"
 <h3>Persons</h3>
 
+<FluentGrid Spacing="1">
+    <FluentGridItem>
+        <FluentSelect Items=@stringOptions1
+                      TOption="Option<string>"
+                      OptionText="@(i => i.Text)"
+                      OptionValue="@(i => i.Value)"
+                      OptionSelected="@(i => i.Selected)"
+                      @bind-Value="@stringValue"
+                      SelectedOptionChanged="OnChange"/>
+    </FluentGridItem>
+    <FluentGridItem Style="min-width: 800px;">
+        @if(stringValue == "1")
+        {
+            <FluentTextField @bind-Value=stringValue1 Style="width: 100%;"></FluentTextField>
+        }
+        @if(stringValue == "2")
+        {
+            <FluentNumberField @bind-Value=numberValue1/>
+        }
+        @if (stringValue == "3")
+        {
+            <FluentDatePicker AriaLabel="To" @bind-Value=dateValue1 />
+        }
+        @if (stringValue == "4")
+        {
+            <FluentStack>
+                <FluentLabel Typo="Typography.Body">Desde:</FluentLabel>
+                <FluentTextField @bind-Value=stringValue1 Style="width: 100%;"/>
+                <FluentLabel Typo="Typography.Body">Hasta:</FluentLabel>
+                <FluentTextField @bind-Value=stringValue2 Style="width: 100%;"/>
+            </FluentStack>
+        }
+        @if (stringValue == "5")
+        {
+            <FluentStack>
+                <FluentLabel Typo="Typography.Body">Desde:</FluentLabel>
+                <FluentNumberField @bind-Value=numberValue1 />
+                <FluentLabel Typo="Typography.Body">Hasta:</FluentLabel>
+                <FluentNumberField @bind-Value=numberValue2 />
+            </FluentStack>
+        }
+        @if (stringValue == "6")
+        {
+            <FluentStack>
+                <FluentLabel Typo="Typography.Body">Desde:</FluentLabel>
+                <FluentDatePicker AriaLabel="To" @bind-Value=dateValue1 />
+                <FluentLabel Typo="Typography.Body">Hasta:</FluentLabel>
+                <FluentDatePicker AriaLabel="To" @bind-Value=dateValue2 />
+            </FluentStack>
+        }
+    </FluentGridItem>
+</FluentGrid>
+
 <FluentDataGrid Items="@people" ResizableColumns=true Pagination="@pagination"
     GridTemplateColumns="0.2fr 1fr 0.2fr 0.2fr 0.2fr 0.2fr" 
     RowStyle="@rowStyle" Style="height: 405px; overflow:auto;"
@@ -29,25 +82,60 @@
         }
     }
 
+    string? stringValue;
+    static List<Option<string>> stringOptions1 = new()
+    {
+        { new Option<string> { Value = "9", Text = "Nine", Icon = (new Icons.Regular.Size24.AppsList(), Color.Neutral, "start" ) } },
+        { new Option<string> { Value = "8", Text = "Eight", Selected = true } },
+        { new Option<string> { Value = "7", Text = "Seven" } },
+        { new Option<string> { Value = "6", Text = "Rango Date" } },
+        { new Option<string> { Value = "5", Text = "Rango Number" } },
+        { new Option<string> { Value = "4", Text = "Rango String" } },
+        { new Option<string> { Value = "3", Text = "Date" } },
+        { new Option<string> { Value = "2", Text = "Number" } },
+        { new Option<string> { Value = "1", Text = "String" } }
+
+    };
+
+    string stringValue1;
+    string stringValue2;
+    int numberValue1;
+    int numberValue2;
+    DateTime? dateValue1;
+    DateTime? dateValue2;
+
     PaginationState pagination = new PaginationState { ItemsPerPage = 10 };
 
     //Func<Person, string?> rowClass = x => x.Name.StartsWith("A") ? "highlighted-row" : null;
-    Func<Person, string?> rowStyle = x => x.Selected ? "background-color: var(--highlight-bg);" : null;
+    Func<Person, string?> rowStyle = x => x.Selected ? "background-color: var(--highlight-bg); grid-template-columns: 0.2fr 1fr 0.2fr 0.2fr 0.2fr 0.2fr;" : "grid-template-columns: 0.2fr 1fr 0.2fr 0.2fr 0.2fr 0.2fr;";
+
+    private Person SelectedPerson { get; set; }
 
     IQueryable<Person> people = new[]
     {
         new Person(false, 10895, "Jean Martin", new DateOnly(1985, 3, 16)),
         new Person(false, 10944, "António Langa", new DateOnly(1991, 12, 1)),
         new Person(false,11203, "Julie Smith", new DateOnly(1958, 10, 10)),
-        new Person(true,11205, "Nur Sari", new DateOnly(1922, 4, 27)),
+        new Person(false,11205, "Nur Sari", new DateOnly(1922, 4, 27)),
         new Person(false,11898, "Jose Hernandez", new DateOnly(2011, 5, 3)),
         new Person(false,12130, "Kenji Sato", new DateOnly(2004, 1, 9)),
     }.AsQueryable();
 
     private void HandleRowFocus(FluentDataGridRow<Person> row)
     {
-        const bool V = true;
-        row.Item.Selected = V;
-        Console.WriteLine($"Row focused: {row.Item?.Selected}");
+        if (row.RowType == DataGridRowType.Default)
+        {
+            if (SelectedPerson is not null)
+            {
+                SelectedPerson.Selected = false;
+            }
+            SelectedPerson = row.Item;
+            SelectedPerson.Selected = true;
+        }
+    }
+
+    private void OnChange(Option<string>? value)
+    {
+        var a = 5;
     }
 }
