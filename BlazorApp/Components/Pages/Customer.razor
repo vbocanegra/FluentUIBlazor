@@ -1,0 +1,117 @@
+﻿@inject IDialogService DialogService
+@using BlazorApp.Components.Dialog
+@using BlazorApp.Dtos
+@using BlazorApp.Services
+
+@page "/Customer"
+<h3>Customers</h3>
+
+<FluentLayout Style="margin-top: 10px;">
+    <FluentGrid Spacing="3"  Justify="JustifyContent.SpaceBetween" >
+       
+        <FluentGridItem xs="3">
+            <div class="card">
+                <FluentButton>Add New</FluentButton>
+            </div>
+        </FluentGridItem>
+        <FluentGridItem xs="12">
+                <FluentDataGrid Items="@customer" RowStyle="@rowStyle"
+                                GridTemplateColumns="0.2fr 1fr 0.2fr 0.2fr 0.2fr 0.2fr"
+                                TGridItem="PersonDto" OnRowFocus="HandleRowFocus">
+                    <PropertyColumn Property="@(p => p.Id)" Sortable="true" />
+                    <PropertyColumn Property="@(p => p.Name)" Sortable="true" />
+                    <PropertyColumn Property="@(p => p.Country)" Sortable="true" />
+                    <PropertyColumn Property="@(p => p.Age)" Sortable="true" />
+                    <TemplateColumn Title="Actions" Align="@Align.End">
+                        <FluentButton IconEnd="@(new Icons.Regular.Size16.Edit())" OnClick="@OpenDialogAsync" />
+                        <FluentButton IconEnd="@(new Icons.Regular.Size16.Delete())" OnClick="@ShowConfirmationAsync" />
+                    </TemplateColumn>
+                </FluentDataGrid>
+            
+        </FluentGridItem>
+    </FluentGrid>
+
+
+</FluentLayout>
+@code {
+    bool? canceled;
+    private bool _trapFocus = true;
+    private bool _modal = true;
+    private PersonDto SelectedPerson { get; set; }
+    static List<PersonDto> customerList = new List<PersonDto>();
+    IQueryable<PersonDto> customer = Enumerable.Empty<PersonDto>().AsQueryable();
+    
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        ConvertListToQueryable();
+    }
+
+    private void ConvertListToQueryable()
+    {
+        if (customerList is null) return;
+        foreach (var person in CustomerServices.GetCustomers())
+        {
+            customer = customer.Concat(new[] { person }.AsQueryable());
+        }
+
+    }
+
+
+    Func<PersonDto, string?> rowStyle = x => x.Selected ? "background-color: var(--highlight-bg); grid-template-columns: 0.2fr 1fr 0.2fr 0.2fr 0.2fr 0.2fr;" : "grid-template-columns: 0.2fr 1fr 0.2fr 0.2fr 0.2fr 0.2fr;";
+
+
+    private void HandleRowFocus(FluentDataGridRow<PersonDto> row)
+    {
+        if (row.RowType == DataGridRowType.Default)
+        {
+            if (SelectedPerson is not null)
+            {
+                SelectedPerson.Selected = false;
+            }
+            SelectedPerson = row.Item;
+            SelectedPerson.Selected = true;
+        }
+    }
+
+    private async Task OpenDialogAsync()
+    {
+        Console.WriteLine($"Open dialog centered");
+
+        DialogParameters parameters = new()
+            {
+                Title = $"Hello {SelectedPerson.Name}",
+                PrimaryAction = "Yes",
+                PrimaryActionEnabled = false,
+                SecondaryAction = "No",
+                Width = "500px",
+                TrapFocus = _trapFocus,
+                Modal = _modal,
+                PreventScroll = true
+            };
+
+        IDialogReference dialog = await DialogService.ShowDialogAsync<SimpleDialog>(SelectedPerson, parameters);
+        DialogResult? result = await dialog.Result;
+
+
+        if (result.Data is not null)
+        {
+            PersonDto? simpleCustomer = result.Data as PersonDto;
+            Console.WriteLine($"Dialog closed by {simpleCustomer?.Name}  ({simpleCustomer?.Age}) - Canceled: {result.Cancelled}");
+        }
+        else
+        {
+            Console.WriteLine($"Dialog closed - Canceled: {result.Cancelled}");
+        }
+    }
+
+
+
+    private async Task ShowConfirmationAsync()
+    {
+        var dialog = await DialogService.ShowConfirmationAsync("¿Deseas eliminar el registro?", "Si", "No", "Eliminar registro");
+        var result = await dialog.Result;
+        canceled = result.Cancelled;
+    }
+}

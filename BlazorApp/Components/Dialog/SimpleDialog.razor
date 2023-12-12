@@ -1,0 +1,38 @@
+﻿@using BlazorApp.Dtos;
+@implements IDialogContentComponent<PersonDto>
+
+@* Header *@
+<FluentDialogHeader ShowDismiss="true">
+    <FluentStack VerticalAlignment="VerticalAlignment.Center">
+        <FluentIcon Value="@(new Icons.Regular.Size24.WindowApps())" />
+        <FluentLabel Typo="Typography.PaneHeader">
+            @Dialog.Instance.Parameters.Title
+        </FluentLabel>
+    </FluentStack>
+</FluentDialogHeader>
+
+@* Footer *@
+<FluentDialogFooter>
+    <FluentButton Appearance="Appearance.Accent" OnClick="@SaveAsync">Close</FluentButton>
+</FluentDialogFooter>
+
+@* Body *@
+<FluentDialogBody>
+    <FluentNumberField  @bind-Value="@Content.Id" HideStep=true ReadOnly=true   >Id:</FluentNumberField>
+    <FluentTextField @bind-Value="@Content.Name">Name:</FluentTextField>
+    <FluentTextField @bind-Value="@Content.Country">Country:</FluentTextField>
+    <FluentNumberField @bind-Value="@Content.Age">Age:</FluentNumberField>
+</FluentDialogBody>
+
+@code {
+    [Parameter]
+    public PersonDto Content { get; set; } = default!;
+
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+
+    private async Task SaveAsync()
+    {
+        await Dialog.CloseAsync();
+    }
+}
