@@ -11,8 +11,8 @@
         <FluentStack Orientation="Orientation.Horizontal" Style="height: 100%;">
 
             @* Left Menu *@
-            <FluentNavMenu Width="250" Title="Navigation menu">
-                <FluentNavLink Href="/"
+            <FluentNavMenu @bind-Expanded="@Expanded" Width="250" Collapsible="true" Title="Collapsible demo">
+                <FluentNavLink Icon="@(new Icons.Regular.Size20.Home())" Href="/"
                             Match="NavLinkMatch.All">Home</FluentNavLink>
                 <FluentNavLink Href="/Persons">Persons</FluentNavLink>
                 <FluentNavLink Href="/Weather">Weather</FluentNavLink>
@@ -40,4 +40,4 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
-<FluentDialogProvider />
+

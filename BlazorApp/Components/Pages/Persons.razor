@@ -1,6 +1,29 @@
 ﻿@page "/Persons"
 <h3>Persons</h3>
 
+<FluentToolbar>
+    <FluentButton IconEnd="@(new Icons.Regular.Size16.New())"
+                  Title="Nuevo"
+                  OnClick="@(() => Console.WriteLine("Button clicked"))" />
+    <FluentButton IconEnd="@(new Icons.Regular.Size16.Edit())"
+                  Title="Editar"
+                  OnClick="@(() => Console.WriteLine("Button clicked"))" />
+    <FluentButton IconEnd="@(new Icons.Regular.Size16.Delete())"
+                  Title="Eliminar" Color="Color.Error"
+                  OnClick="@(() => Console.WriteLine("Button clicked"))" />
+    <FluentButton Title="Refrescar" OnClick="@(() => Console.WriteLine("Button clicked"))">
+        <FluentIcon Value="@(new Icons.Regular.Size16.ArrowSync())" Color="Color.Error"/>
+    </FluentButton>                
+    <FluentButton IconEnd="@(new Icons.Regular.Size16.ArrowSync())"
+                  Title="Refrescar"
+                  OnClick="@(() => Console.WriteLine("Button clicked"))" />
+    <FluentButton IconEnd="@(new Icons.Regular.Size16.Print())"
+                  Title="Imprimir"
+                  OnClick="@(() => Console.WriteLine("Button clicked"))" />
+    <FluentButton Title="Ayuda" OnClick="@(() => Console.WriteLine("Button clicked"))">
+        <FluentIcon Value="@(new Icons.Regular.Size16.Question())" Color="Color.Success" />
+    </FluentButton>
+</FluentToolbar>
 <FluentGrid Spacing="1">
     <FluentGridItem>
         <FluentSelect Items=@stringOptions1
@@ -11,10 +34,10 @@
                       @bind-Value="@stringValue"
                       SelectedOptionChanged="OnChange"/>
     </FluentGridItem>
-    <FluentGridItem Style="min-width: 800px;">
+    <FluentGridItem>
         @if(stringValue == "1")
         {
-            <FluentTextField @bind-Value=stringValue1 Style="width: 100%;"></FluentTextField>
+            <FluentTextField @bind-Value=stringValue1 Style="width: 800px;"></FluentTextField>
         }
         @if(stringValue == "2")
         {
@@ -52,6 +75,11 @@
             </FluentStack>
         }
     </FluentGridItem>
+    <FluentGridItem>
+        <FluentButton IconStart="@(new Icons.Regular.Size16.Search())">
+            Buscar
+        </FluentButton>
+    </FluentGridItem>
 </FluentGrid>
 
 <FluentDataGrid Items="@people" ResizableColumns=true Pagination="@pagination"
@@ -85,16 +113,12 @@
     string? stringValue;
     static List<Option<string>> stringOptions1 = new()
     {
-        { new Option<string> { Value = "9", Text = "Nine", Icon = (new Icons.Regular.Size24.AppsList(), Color.Neutral, "start" ) } },
-        { new Option<string> { Value = "8", Text = "Eight", Selected = true } },
-        { new Option<string> { Value = "7", Text = "Seven" } },
-        { new Option<string> { Value = "6", Text = "Rango Date" } },
-        { new Option<string> { Value = "5", Text = "Rango Number" } },
-        { new Option<string> { Value = "4", Text = "Rango String" } },
-        { new Option<string> { Value = "3", Text = "Date" } },
+        { new Option<string> { Value = "1", Text = "String", Selected= true } },
         { new Option<string> { Value = "2", Text = "Number" } },
-        { new Option<string> { Value = "1", Text = "String" } }
-
+        { new Option<string> { Value = "3", Text = "Date" } },
+        { new Option<string> { Value = "4", Text = "Rango String" } },
+        { new Option<string> { Value = "5", Text = "Rango Number" } },
+        { new Option<string> { Value = "6", Text = "Rango Date" } },
     };
 
     string stringValue1;
