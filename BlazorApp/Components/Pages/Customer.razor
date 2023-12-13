@@ -1,24 +1,138 @@
-﻿@inject IDialogService DialogService
+﻿@page "/Customer"
+@inject IDialogService DialogService
+
 @using BlazorApp.Components.Dialog
 @using BlazorApp.Dtos
 @using BlazorApp.Services
 
-@page "/Customer"
-<h3>Customers</h3>
+<FluentBreadcrumb>
+    <FluentBreadcrumbItem Href="#">
+        Customer
+    </FluentBreadcrumbItem>
+    <FluentBreadcrumbItem Href="#">
+        Customers
+    </FluentBreadcrumbItem>
+    
+</FluentBreadcrumb>
 
-<FluentLayout Style="margin-top: 10px;">
-    <FluentGrid Spacing="3"  Justify="JustifyContent.SpaceBetween" >
-       
-        <FluentGridItem xs="3">
-            <div class="card">
-                <FluentButton>Add New</FluentButton>
-            </div>
+<h2>Customers</h2>
+
+    <FluentLayout Style="margin-top: 10px;">
+        <FluentGrid Spacing="3" >
+            <FluentGridItem xs="12">
+                <FluentDivider Role="DividerRole.Presentation"></FluentDivider>
+                <FluentToolbar>
+
+                    <FluentButton IconStart="@(new Icons.Regular.Size16.New())"
+                                  Title="Nuevo"
+                                  OnClick="@(() => Console.WriteLine("Button clicked"))">
+                        <div class="responsive-sm">Nuevo</div>
+                    </FluentButton>
+                    <FluentButton IconStart="@(new Icons.Regular.Size16.Edit())"
+                                  Title="Editar"
+                                  OnClick="@(() => Console.WriteLine("Button clicked"))">
+                        <div class="responsive-sm">Editar</div>
+                    </FluentButton>
+                    <FluentButton IconStart="@(new Icons.Regular.Size16.Delete())"
+                                  Title="Eliminar" Color="Color.Error"
+                                  OnClick="@(() => Console.WriteLine("Button clicked"))">
+                        <div class="responsive-sm">Eliminar</div>
+                    </FluentButton>
+
+                    <FluentButton IconStart="@(new Icons.Regular.Size16.ArrowSync())"
+                                  Title="Refrescar"
+                                  OnClick="@(() => Console.WriteLine("Button clicked"))">
+                        <div class="responsive-sm">Refrescar</div>
+                    </FluentButton>
+                    <FluentDivider Style="height: 50px;" Role="DividerRole.Separator" Orientation="Orientation.Vertical"></FluentDivider>
+                    <FluentButton IconStart="@(new Icons.Regular.Size16.Print())"
+                                  Title="Imprimir"
+                                  OnClick="@(() => Console.WriteLine("Button clicked"))" />
+                    <FluentButton Title="Ayuda" OnClick="@(() => Console.WriteLine("Button clicked"))">
+                        <FluentIcon Value="@(new Icons.Regular.Size16.Question())" Color="Color.Success" />
+                    </FluentButton>
+                </FluentToolbar>
+            </FluentGridItem>
+        </FluentGrid>
+        <FluentGrid Spacing="3" >
+          
+            <FluentGridItem xs="12">
+
+            
+                <FluentSelect Items=@stringOptions1
+                              TOption="Option<string>"
+                              OptionText="@(i => i.Text)"
+                              OptionValue="@(i => i.Value)"
+                              OptionSelected="@(i => i.Selected)"
+                              @bind-Value="@stringValue"
+                              SelectedOptionChanged="OnChange" Style="padding-left:10px" />
+            
+            
+                @if (stringValue == "1")
+                {
+                    <FluentTextField @bind-Value=stringValue1 Style="width: 800px;"></FluentTextField>
+                }
+                @if (stringValue == "2")
+                {
+                    <FluentNumberField @bind-Value=numberValue1 />
+                }
+                @if (stringValue == "3")
+                {
+                    <FluentDatePicker AriaLabel="To" @bind-Value=dateValue1 />
+                }
+                @if (stringValue == "4")
+                {
+                    <FluentStack>
+                        <FluentLabel Typo="Typography.Body">Desde:</FluentLabel>
+                        <FluentTextField @bind-Value=stringValue1 Style="width: 100%;" />
+                        <FluentLabel Typo="Typography.Body">Hasta:</FluentLabel>
+                        <FluentTextField @bind-Value=stringValue2 Style="width: 100%;" />
+                    </FluentStack>
+                }
+                @if (stringValue == "5")
+                {
+                    <FluentStack>
+                        <FluentLabel Typo="Typography.Body">Desde:</FluentLabel>
+                        <FluentNumberField @bind-Value=numberValue1 />
+                        <FluentLabel Typo="Typography.Body">Hasta:</FluentLabel>
+                        <FluentNumberField @bind-Value=numberValue2 />
+                    </FluentStack>
+                }
+                @if (stringValue == "6")
+                {
+                    <FluentStack>
+                        <FluentLabel Typo="Typography.Body">Desde:</FluentLabel>
+                        <FluentDatePicker AriaLabel="To" @bind-Value=dateValue1 />
+                        <FluentLabel Typo="Typography.Body">Hasta:</FluentLabel>
+                        <FluentDatePicker AriaLabel="To" @bind-Value=dateValue2 />
+                    </FluentStack>
+                }
+            
+           
+                <FluentButton IconStart="@(new Icons.Regular.Size16.Search())">
+                    Buscar
+                </FluentButton>
+
         </FluentGridItem>
-        <FluentGridItem xs="12">
+          
+        </FluentGrid>
+        <FluentGrid Spacing="3" Style="margin-top: 10px;">
+            <FluentGridItem xs="12" >
                 <FluentDataGrid Items="@customer" RowStyle="@rowStyle"
-                                GridTemplateColumns="0.2fr 1fr 0.2fr 0.2fr 0.2fr 0.2fr"
-                                TGridItem="PersonDto" OnRowFocus="HandleRowFocus">
-                    <PropertyColumn Property="@(p => p.Id)" Sortable="true" />
+                                GridTemplateColumns="0.1fr 0.1fr 0.2fr 0.2fr 0.1fr 0.1fr"
+                                TGridItem="PersonDto" OnRowFocus="HandleRowFocus"
+                                GenerateHeader="GenerateHeaderOption.Sticky"
+                                Pagination="@pagination">
+                    <TemplateColumn Title="Select" Align="@Align.Start">
+                                <FluentCheckbox></FluentCheckbox>
+                    </TemplateColumn>
+                    <PropertyColumn  Property="@(p => p.Id)"  Sortable="true" />
+                    <TemplateColumn Title="menu">
+                    <FluentButton Id="@indice" @onclick="@(() => open = !open)">
+                            <div >...</div>
+                        </FluentButton>
+                  
+                    </TemplateColumn>
                     <PropertyColumn Property="@(p => p.Name)" Sortable="true" />
                     <PropertyColumn Property="@(p => p.Country)" Sortable="true" />
                     <PropertyColumn Property="@(p => p.Age)" Sortable="true" />
@@ -26,26 +140,92 @@
                         <FluentButton IconEnd="@(new Icons.Regular.Size16.Edit())" OnClick="@OpenDialogAsync" />
                         <FluentButton IconEnd="@(new Icons.Regular.Size16.Delete())" OnClick="@ShowConfirmationAsync" />
                     </TemplateColumn>
+                
                 </FluentDataGrid>
-            
-        </FluentGridItem>
-    </FluentGrid>
+
+            </FluentGridItem>
+        </FluentGrid>
+        <FluentGrid>
+             <FluentGridItem xs="12" >
+                <FluentPaginator State="@pagination" />
+            </FluentGridItem>
+        </FluentGrid>
+    </FluentLayout>
+
+<FluentMenu Anchor="@indice" @bind-Open="open" @onmenuchange=OnMenuChange>
+    <FluentMenuItem OnClick="@((e) => Console.WriteLine("Item 1 Clicked"))">
+        Menu item 1
+    </FluentMenuItem>
+    <FluentMenuItem OnClick="@((e) => Console.WriteLine("Item 2 Clicked"))"
+                    Checked="true">
+        Menu item 2 Checked
+    </FluentMenuItem>
+    <FluentMenuItem OnClick="@((e) => Console.WriteLine("Item 3 Clicked"))"
+                    Disabled="true">
+        Menu item 3 Disabled
+    </FluentMenuItem>
+    <FluentMenuItem OnClick="@((e) => Console.WriteLine("Item 4 Clicked"))">
+        <span slot="start"><FluentIcon Value="@(new Icons.Regular.Size24.ClipboardPaste())" Color="Color.Neutral" Slot="start" /></span>
+        Menu item 4 with Icon
+    </FluentMenuItem>
+</FluentMenu>
 
 
-</FluentLayout>
+
+
+
 @code {
+    [Inject] IJSRuntime js { get; set; } = null!;
+
+    bool open = false;
+    private string status = "";
+
     bool? canceled;
     private bool _trapFocus = true;
     private bool _modal = true;
     private PersonDto SelectedPerson { get; set; }
     static List<PersonDto> customerList = new List<PersonDto>();
     IQueryable<PersonDto> customer = Enumerable.Empty<PersonDto>().AsQueryable();
-    
+
+    /*filter*/
+    string? stringValue;
+    static List<Option<string>> stringOptions1 = new()
+    {
+        { new Option<string> { Value = "1", Text = "String", Selected= true } },
+        { new Option<string> { Value = "2", Text = "Number" } },
+        { new Option<string> { Value = "3", Text = "Date" } },
+        { new Option<string> { Value = "4", Text = "Rango String" } },
+        { new Option<string> { Value = "5", Text = "Rango Number" } },
+        { new Option<string> { Value = "6", Text = "Rango Date" } },
+    };
+
+    string stringValue1;
+    string stringValue2;
+    int numberValue1;
+    int numberValue2;
+    DateTime? dateValue1;
+    DateTime? dateValue2;
+    /*close filter*/
+
+    private static string indice="" ;
+
+    /*pagination*/
+    PaginationState pagination = new PaginationState { ItemsPerPage = 10 };
+    /*close pagination*/
+
+    private void OnMenuChange(MenuChangeEventArgs args)
+    {
+        if (args is not null && args.Value is not null)
+            status = $"Item \"{args.Value}\" clicked";
+    }
 
     protected override void OnInitialized()
     {
+
         base.OnInitialized();
         ConvertListToQueryable();
+        indice = "1";
+
     }
 
     private void ConvertListToQueryable()
@@ -59,7 +239,7 @@
     }
 
 
-    Func<PersonDto, string?> rowStyle = x => x.Selected ? "background-color: var(--highlight-bg); grid-template-columns: 0.2fr 1fr 0.2fr 0.2fr 0.2fr 0.2fr;" : "grid-template-columns: 0.2fr 1fr 0.2fr 0.2fr 0.2fr 0.2fr;";
+    Func<PersonDto, string?> rowStyle = x => x.Selected ? "background-color: var(--highlight-bg); grid-template-columns: 0.1fr 0.1fr 0.2fr 0.2fr 0.1fr 0.1fr;" : "grid-template-columns: 0.1fr 0.1fr 0.2fr 0.2fr 0.1fr 0.1fr;";
 
 
     private void HandleRowFocus(FluentDataGridRow<PersonDto> row)
@@ -72,7 +252,14 @@
             }
             SelectedPerson = row.Item;
             SelectedPerson.Selected = true;
+            indice = SelectedPerson.Id.ToString();
+            //await js.InvokeVoidAsync("testj");
         }
+    }
+
+    private void HandleRowFocusFocus(FluentDataGridRow<PersonDto> row)
+    {
+       
     }
 
     private async Task OpenDialogAsync()
@@ -114,4 +301,17 @@
         var result = await dialog.Result;
         canceled = result.Cancelled;
     }
+
+    private void OnChange(Option<string>? value)
+    {
+        var a = 5;
+    }
+
+    [JSInvokable]
+    public static Task<string> testJS()
+    {
+        return Task.FromResult(indice);
+
+    }
+
 }

@@ -40,13 +40,28 @@ body {
     text-align: center;
 }
 
+
+
 .fluent-nav-menu {
     background-color: var(--neutral-layer-1);
     height: 100%;
 }
 
 .main-content {
-    height: 100%;
+    /**height: 100%;**/
     width: 100%;
     padding: 0px 16px;
+}
+
+/* Meddiiaass */
+@media only screen and (max-width: 768px) {
+    .responsive-sm {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 1024px) {
+    .responsive-sm {
+        display: display;
+    }
 }
